@@ -1,0 +1,11 @@
+name = "vpn-sales-bot"
+main = "src/index.ts"
+compatibility_date = "2026-03-11"
+
+[observability]
+enabled = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "vpn_bot_db"
+database_id = "03f15a7c-7366-479d-b2a6-ce1ff570c5d4"

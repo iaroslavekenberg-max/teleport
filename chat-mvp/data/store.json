@@ -1,0 +1,35 @@
+{
+  "users": [
+    {
+      "id": "7f4bcaca-220a-4819-aec4-d31d4b40ee33",
+      "username": "owner",
+      "passwordSalt": "06a504886e0b7d778383a6e0bb3a9d50",
+      "passwordHash": "26549661a619831526b00bdff71a6f044790ecbef40c5eeb2e3234ba0aef14f58803b9e4e6b817afcc08f1c5dbc73725323e12def39ed5bccc0f4d57f2dde583",
+      "createdAt": "2026-03-17T13:38:39.217Z"
+    },
+    {
+      "id": "0c9d72b2-3525-41a8-8970-2544a6375d38",
+      "username": "ekenberg",
+      "passwordSalt": "6e6297b3cda225ecb17b4995a541b191",
+      "passwordHash": "5dd0b7d2be546dc4fc2c4971c983b3878fe59d2c50340a59f1058c68cfd07449b8ff00fad5ef6ad1b8ad6bafcac87f0e5b70c2e50e8d8acc989561e5836835a5",
+      "createdAt": "2026-03-17T13:48:00.031Z"
+    }
+  ],
+  "sessions": [
+    {
+      "token": "8e6c272f6ab28f3ebfabd53d5060373e86aaf83f97b9e2fc2535c042aa6a3d55",
+      "userId": "7f4bcaca-220a-4819-aec4-d31d4b40ee33",
+      "createdAt": "2026-03-17T13:38:39.270Z",
+      "lastSeenAt": "2026-03-17T13:38:39.270Z"
+    },
+    {
+      "token": "5f5df8aa4f4d9f046ed7513380868516ca32b0f61e8c36e2c7383083b79d03be",
+      "userId": "0c9d72b2-3525-41a8-8970-2544a6375d38",
+      "createdAt": "2026-03-17T13:48:07.379Z",
+      "lastSeenAt": "2026-03-17T13:48:07.445Z"
+    }
+  ],
+  "conversations": [],
+  "memberships": [],
+  "messages": []
+}

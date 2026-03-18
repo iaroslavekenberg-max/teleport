@@ -1,0 +1,49 @@
+﻿{
+  "log": {
+    "loglevel": "warning"
+  },
+  "inbounds": [
+    {
+      "tag": "http-in",
+      "listen": "0.0.0.0",
+      "port": 3128,
+      "protocol": "http",
+      "settings": {
+        "accounts": [
+          {
+            "user": "REPLACE_PROXY_USER",
+            "pass": "REPLACE_PROXY_PASS"
+          }
+        ]
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "tag": "to-vless",
+      "protocol": "vless",
+      "settings": {
+        "vnext": [
+          {
+            "address": "REPLACE_VLESS_HOST",
+            "port": 443,
+            "users": [
+              {
+                "id": "REPLACE_VLESS_UUID",
+                "encryption": "none",
+                "flow": ""
+              }
+            ]
+          }
+        ]
+      },
+      "streamSettings": {
+        "network": "tcp",
+        "security": "tls",
+        "tlsSettings": {
+          "serverName": "REPLACE_SNI"
+        }
+      }
+    }
+  ]
+}

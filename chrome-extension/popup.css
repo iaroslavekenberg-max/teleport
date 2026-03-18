@@ -1,0 +1,81 @@
+﻿:root {
+  color-scheme: light;
+  font-family: "Segoe UI", Tahoma, sans-serif;
+}
+
+body {
+  margin: 0;
+  min-width: 360px;
+  background: #f4f7fb;
+  color: #122033;
+}
+
+.card {
+  padding: 14px;
+  display: grid;
+  gap: 8px;
+}
+
+h1 {
+  margin: 0 0 2px;
+  font-size: 18px;
+}
+
+label {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+input,
+textarea,
+button {
+  font: inherit;
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid #c8d3e0;
+  border-radius: 10px;
+  padding: 8px 10px;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-weight: 600;
+  cursor: pointer;
+  background: #1264ff;
+  color: #fff;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.actions button:last-child {
+  background: #3a495d;
+}
+
+.status {
+  margin: 0;
+  font-size: 12px;
+  min-height: 16px;
+}
+
+.status.error {
+  color: #ad1937;
+}
+
+.status.ok {
+  color: #0b7b3a;
+}

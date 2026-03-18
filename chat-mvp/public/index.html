@@ -1,0 +1,65 @@
+﻿<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chat MVP</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div id="auth" class="auth">
+      <h1>Chat MVP</h1>
+      <p>Личка, группы, каналы</p>
+      <form id="loginForm" class="card">
+        <h2>Вход</h2>
+        <input id="loginUsername" placeholder="username" required />
+        <input id="loginPassword" type="password" placeholder="password" required />
+        <button type="submit">Войти</button>
+      </form>
+      <form id="registerForm" class="card">
+        <h2>Регистрация</h2>
+        <input id="registerUsername" placeholder="username" required />
+        <input id="registerPassword" type="password" placeholder="password" required />
+        <button type="submit">Создать аккаунт</button>
+      </form>
+      <p id="authError" class="error"></p>
+    </div>
+
+    <div id="app" class="app hidden">
+      <aside class="sidebar">
+        <div class="sidebar-top">
+          <div>
+            <strong id="meLabel"></strong>
+          </div>
+          <button id="logoutBtn" class="secondary">Выйти</button>
+        </div>
+        <div class="actions">
+          <button id="newDirectBtn">+ Личка</button>
+          <button id="newGroupBtn">+ Группа</button>
+          <button id="newChannelBtn">+ Канал</button>
+        </div>
+        <div id="conversations" class="conversations"></div>
+      </aside>
+
+      <main class="chat">
+        <div class="chat-header">
+          <div>
+            <h2 id="chatTitle">Выберите чат</h2>
+            <small id="chatMeta"></small>
+          </div>
+          <button id="addMemberBtn" class="secondary hidden">Добавить участника</button>
+        </div>
+
+        <div id="messages" class="messages"></div>
+
+        <form id="messageForm" class="message-form hidden">
+          <input id="messageInput" placeholder="Введите сообщение..." autocomplete="off" />
+          <button type="submit">Отправить</button>
+        </form>
+      </main>
+    </div>
+
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>
+

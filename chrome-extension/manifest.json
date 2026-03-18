@@ -1,0 +1,12 @@
+﻿{
+  "manifest_version": 3,
+  "name": "VPN Key Receiver",
+  "description": "Gets one-time VLESS key from your Telegram bot backend.",
+  "version": "1.0.0",
+  "action": {
+    "default_title": "VPN Key Receiver",
+    "default_popup": "popup.html"
+  },
+  "permissions": ["storage", "clipboardWrite"],
+  "host_permissions": ["<all_urls>"]
+}

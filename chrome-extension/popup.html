@@ -1,0 +1,37 @@
+﻿<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VPN Key Receiver</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <main class="card">
+      <h1>VPN key</h1>
+
+      <label for="apiBase">API URL</label>
+      <input id="apiBase" type="url" placeholder="https://your-worker.workers.dev" />
+
+      <label for="apiToken">API Token</label>
+      <input id="apiToken" type="password" placeholder="Extension token" />
+
+      <label for="claimCode">Одноразовый код</label>
+      <input id="claimCode" type="text" maxlength="8" inputmode="numeric" placeholder="8 цифр" />
+
+      <button id="claimBtn" type="button">Получить ключ</button>
+
+      <label for="keyResult">VLESS ключ</label>
+      <textarea id="keyResult" rows="4" readonly placeholder="Здесь появится vless://..."></textarea>
+
+      <div class="actions">
+        <button id="copyBtn" type="button">Скопировать ключ</button>
+        <button id="saveBtn" type="button">Сохранить настройки</button>
+      </div>
+
+      <p id="status" class="status"></p>
+    </main>
+
+    <script src="popup.js" type="module"></script>
+  </body>
+</html>

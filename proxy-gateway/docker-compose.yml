@@ -1,0 +1,10 @@
+﻿services:
+  xray-gateway:
+    image: ghcr.io/xtls/xray-core:latest
+    container_name: xray-gateway
+    restart: unless-stopped
+    ports:
+      - "3128:3128" # HTTP proxy for browser
+    volumes:
+      - ./config.json:/etc/xray/config.json:ro
+    command: ["run", "-c", "/etc/xray/config.json"]
