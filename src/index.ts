@@ -46,7 +46,7 @@ type ActiveSubscriptionRow = {
 
 const app = new Hono<{ Bindings: Bindings }>()
 
-const PLAN_NAME = 'VPN 30 РґРЅРµР№'
+const PLAN_NAME = 'VPN 30 дней'
 const PLAN_DAYS = 30
 const PLAN_PRICE_RUB = '199.00'
 const CORP_PROXY_BUTTON_TEXT = 'Корп. прокси'
@@ -54,8 +54,8 @@ const CORP_PROXY_BUTTON_TEXT = 'Корп. прокси'
 function mainKeyboard() {
   return {
     keyboard: [
-      [{ text: 'РљСѓРїРёС‚СЊ' }, { text: 'РџСЂРѕС„РёР»СЊ' }],
-      [{ text: CORP_PROXY_BUTTON_TEXT }, { text: 'РџРѕРґРґРµСЂР¶РєР°' }]
+      [{ text: 'Купить' }, { text: 'Профиль' }],
+      [{ text: CORP_PROXY_BUTTON_TEXT }, { text: 'Поддержка' }]
     ],
     resize_keyboard: true
   }
@@ -256,7 +256,7 @@ async function activateSubscription(env: Bindings, tgId: number, chatId: number,
   await sendMessage(
     env,
     chatId,
-    `вњ… <b>РћРїР»Р°С‚Р° РїРѕРґС‚РІРµСЂР¶РґРµРЅР°</b>\n\nР’Р°С€ РєР»СЋС‡:\n<code>${escapeHtml(vlessLink)}</code>\n\nРЎСЂРѕРє: ${planDays} РґРЅРµР№.`,
+    `✅ <b>Оплата подтверждена</b>\n\nВаш ключ:\n<code>${escapeHtml(vlessLink)}</code>\n\nСрок: ${planDays} дней.`,
     { reply_markup: mainKeyboard() }
   )
 }
@@ -278,7 +278,7 @@ async function showProfile(env: Bindings, chatId: number, tgId: number) {
     await sendMessage(
       env,
       chatId,
-      'РЈ РІР°СЃ РїРѕРєР° РЅРµС‚ Р°РєС‚РёРІРЅРѕР№ РїРѕРґРїРёСЃРєРё.\nРќР°Р¶РјРёС‚Рµ <b>РљСѓРїРёС‚СЊ</b>, С‡С‚РѕР±С‹ РѕС„РѕСЂРјРёС‚СЊ РґРѕСЃС‚СѓРї.',
+      'У вас пока нет активной подписки.\nНажмите <b>Купить</b>, чтобы оформить доступ.',
       { reply_markup: mainKeyboard() }
     )
     return
@@ -287,9 +287,9 @@ async function showProfile(env: Bindings, chatId: number, tgId: number) {
   await sendMessage(
     env,
     chatId,
-    `рџ‘¤ <b>РџСЂРѕС„РёР»СЊ</b>\n\nРўР°СЂРёС„: ${escapeHtml(sub.plan_name)}\nР”РµР№СЃС‚РІСѓРµС‚ РґРѕ: ${escapeHtml(
+    `👤 <b>Профиль</b>\n\nТариф: ${escapeHtml(sub.plan_name)}\nДействует до: ${escapeHtml(
       sub.expires_at
-    )}\n\nРљР»СЋС‡:\n<code>${escapeHtml(sub.vless_link)}</code>`,
+    )}\n\nКлюч:\n<code>${escapeHtml(sub.vless_link)}</code>`,
     { reply_markup: mainKeyboard() }
   )
 }
@@ -353,7 +353,7 @@ async function showCorpProxy(env: Bindings, chatId: number, tgId: number) {
     await sendMessage(
       env,
       chatId,
-      'вќЊ РќРµС‚ Р°РєС‚РёРІРЅРѕР№ РїРѕРґРїРёСЃРєРё. РЎРЅР°С‡Р°Р»Р° РѕС„РѕСЂРјРёС‚Рµ РїРѕРґРїРёСЃРєСѓ, РїРѕС‚РѕРј Р·Р°РїСЂРѕСЃРёС‚Рµ /corp_proxy.',
+      '❌ Нет активной подписки. Сначала оформите подписку, потом запросите /corp_proxy.',
       { reply_markup: mainKeyboard() }
     )
     return
@@ -363,30 +363,30 @@ async function showCorpProxy(env: Bindings, chatId: number, tgId: number) {
   const port = (env.CORP_PROXY_PORT || '3128').trim()
   const username = (env.CORP_PROXY_USERNAME || '').trim()
   const password = env.CORP_PROXY_PASSWORD || ''
-  const note = env.CORP_PROXY_NOTE || 'Р•СЃР»Рё РЅРµ РїРѕРґРєР»СЋС‡Р°РµС‚СЃСЏ, РЅР°РїРёС€РёС‚Рµ РІ РїРѕРґРґРµСЂР¶РєСѓ.'
+  const note = env.CORP_PROXY_NOTE || 'Если не подключается, напишите в поддержку.'
 
   if (!host || !username || !password) {
     await sendMessage(
       env,
       chatId,
-      'вљ пёЏ РљРѕСЂРїРѕСЂР°С‚РёРІРЅС‹Р№ РїСЂРѕРєСЃРё РїРѕРєР° РЅРµ РЅР°СЃС‚СЂРѕРµРЅ РЅР° СЃРµСЂРІРµСЂРµ. РќР°РїРёС€РёС‚Рµ РІ РїРѕРґРґРµСЂР¶РєСѓ.',
+      '⚠️ Корпоративный прокси пока не настроен на сервере. Напишите в поддержку.',
       { reply_markup: mainKeyboard() }
     )
     return
   }
 
   const text = [
-    'рџЏў <b>Р”РѕСЃС‚СѓРї РґР»СЏ РєРѕСЂРїРѕСЂР°С‚РёРІРЅРѕРіРѕ Р±СЂР°СѓР·РµСЂР°</b>',
+    '🏢 <b>Доступ для корпоративного браузера</b>',
     '',
     `Host: <code>${escapeHtml(host)}</code>`,
     `Port: <code>${escapeHtml(port)}</code>`,
     `Login: <code>${escapeHtml(username)}</code>`,
     `Password: <code>${escapeHtml(password)}</code>`,
     '',
-    '<b>РљР°Рє РїРѕРґРєР»СЋС‡РёС‚СЊ:</b>',
-    '1) РћС‚РєСЂРѕР№С‚Рµ РЅР°СЃС‚СЂРѕР№РєРё РєРѕСЂРїРѕСЂР°С‚РёРІРЅРѕРіРѕ proxy/СЂР°СЃС€РёСЂРµРЅРёСЏ РІ Р±СЂР°СѓР·РµСЂРµ.',
-    '2) Р’РІРµРґРёС‚Рµ Host, Port, Login Рё Password РёР· СЌС‚РѕРіРѕ СЃРѕРѕР±С‰РµРЅРёСЏ.',
-    '3) Р’РєР»СЋС‡РёС‚Рµ proxy Рё РїСЂРѕРІРµСЂСЊС‚Рµ РІРЅРµС€РЅРёР№ IP.',
+    '<b>Как подключить:</b>',
+    '1) Откройте настройки корпоративного proxy/расширения в браузере.',
+    '2) Введите Host, Port, Login и Password из этого сообщения.',
+    '3) Включите proxy и проверьте внешний IP.',
     '',
     escapeHtml(note)
   ].join('\n')
@@ -433,46 +433,46 @@ async function createOrGetPendingPayment(env: Bindings, tgId: number, chatId: nu
 
 function paymentInstruction(env: Bindings, requestId: string) {
   const lines = [
-    `рџ’і <b>${PLAN_NAME}</b>`,
-    `Р¦РµРЅР°: ${PLAN_PRICE_RUB} RUB`,
+    `💳 <b>${PLAN_NAME}</b>`,
+    `Цена: ${PLAN_PRICE_RUB} RUB`,
     '',
-    '<b>РћРїР»Р°С‚Р° РІСЂСѓС‡РЅСѓСЋ:</b>',
-    `РљР°СЂС‚Р°: <code>${escapeHtml(env.PAYMENT_CARD_NUMBER)}</code>`
+    '<b>Оплата вручную:</b>',
+    `Карта: <code>${escapeHtml(env.PAYMENT_CARD_NUMBER)}</code>`
   ]
 
   if (env.PAYMENT_CARD_HOLDER) {
-    lines.push(`РџРѕР»СѓС‡Р°С‚РµР»СЊ: ${escapeHtml(env.PAYMENT_CARD_HOLDER)}`)
+    lines.push(`Получатель: ${escapeHtml(env.PAYMENT_CARD_HOLDER)}`)
   }
   if (env.PAYMENT_BANK_NAME) {
-    lines.push(`Р‘Р°РЅРє: ${escapeHtml(env.PAYMENT_BANK_NAME)}`)
+    lines.push(`Банк: ${escapeHtml(env.PAYMENT_BANK_NAME)}`)
   }
   if (env.PAYMENT_SBP_PHONE) {
-    lines.push(`РЎР‘Рџ: <code>${escapeHtml(env.PAYMENT_SBP_PHONE)}</code>`)
+    lines.push(`СБП: <code>${escapeHtml(env.PAYMENT_SBP_PHONE)}</code>`)
   }
   if (env.PAYMENT_NOTE) {
-    lines.push(`РљРѕРјРјРµРЅС‚Р°СЂРёР№ Рє РїРµСЂРµРІРѕРґСѓ: ${escapeHtml(env.PAYMENT_NOTE)}`)
+    lines.push(`Комментарий к переводу: ${escapeHtml(env.PAYMENT_NOTE)}`)
   }
 
-  lines.push('', `ID Р·Р°СЏРІРєРё: <code>${escapeHtml(requestId)}</code>`)
-  lines.push('РџРѕСЃР»Рµ РѕРїР»Р°С‚С‹ РѕС‚РїСЂР°РІСЊС‚Рµ РІ СЌС‚РѕС‚ С‡Р°С‚ СЃРєСЂРёРЅ С‡РµРєР° РёР»Рё СЃРѕРѕР±С‰РµРЅРёРµ СЃ С‚РµРєСЃС‚РѕРј "С‡РµРє".')
-  lines.push('Р”Р°Р»РµРµ СЏ РѕС‚РїСЂР°РІР»СЋ РІР°С€Сѓ Р·Р°СЏРІРєСѓ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂСѓ РЅР° РїСЂРѕРІРµСЂРєСѓ.')
+  lines.push('', `ID заявки: <code>${escapeHtml(requestId)}</code>`)
+  lines.push('После оплаты отправьте в этот чат скрин чека или сообщение с текстом "чек".')
+  lines.push('Далее я отправлю вашу заявку администратору на проверку.')
 
   return lines.join('\n')
 }
 
 async function notifyAdminsAboutCheck(env: Bindings, tgUser: TelegramUser, payment: PaymentRow) {
-  const username = tgUser.username ? `@${tgUser.username}` : 'Р±РµР· username'
+  const username = tgUser.username ? `@${tgUser.username}` : 'без username'
   const text = [
-    'рџ”” <b>РќРѕРІР°СЏ Р·Р°СЏРІРєР° РЅР° РїСЂРѕРІРµСЂРєСѓ РѕРїР»Р°С‚С‹</b>',
+    '🔔 <b>Новая заявка на проверку оплаты</b>',
     `tg_id: <code>${tgUser.id}</code>`,
     `username: ${escapeHtml(username)}`,
-    `РЎСѓРјРјР°: ${payment.amount_rub} RUB`,
-    `РўР°СЂРёС„: ${payment.plan_days} РґРЅРµР№`,
-    `ID Р·Р°СЏРІРєРё: <code>${escapeHtml(payment.payment_id)}</code>`,
+    `Сумма: ${payment.amount_rub} RUB`,
+    `Тариф: ${payment.plan_days} дней`,
+    `ID заявки: <code>${escapeHtml(payment.payment_id)}</code>`,
     '',
-    `РљРѕРјР°РЅРґС‹:`,
+    `Команды:`,
     `/approve ${tgUser.id}`,
-    `/reject ${tgUser.id} РїСЂРёС‡РёРЅР°`
+    `/reject ${tgUser.id} причина`
   ].join('\n')
 
   for (const adminId of adminIds(env)) {
@@ -525,7 +525,7 @@ async function approveByTgId(env: Bindings, targetTgId: number) {
     .first<PaymentRow>()
 
   if (!payment) {
-    return { ok: false, message: 'Р—Р°СЏРІРєР° РЅРµ РЅР°Р№РґРµРЅР°.' }
+    return { ok: false, message: 'Заявка не найдена.' }
   }
 
   await env.DB.prepare(
@@ -539,7 +539,7 @@ async function approveByTgId(env: Bindings, targetTgId: number) {
     .run()
 
   await activateSubscription(env, payment.tg_id, payment.chat_id, payment.plan_days)
-  return { ok: true, message: `РћРїР»Р°С‚Р° РїРѕРґС‚РІРµСЂР¶РґРµРЅР° РґР»СЏ tg_id ${targetTgId}.` }
+  return { ok: true, message: `Оплата подтверждена для tg_id ${targetTgId}.` }
 }
 
 async function rejectByTgId(env: Bindings, targetTgId: number, reason: string) {
@@ -556,7 +556,7 @@ async function rejectByTgId(env: Bindings, targetTgId: number, reason: string) {
     .first<{ payment_id: string; tg_id: number; chat_id: number }>()
 
   if (!payment) {
-    return { ok: false, message: 'Р—Р°СЏРІРєР° РЅРµ РЅР°Р№РґРµРЅР°.' }
+    return { ok: false, message: 'Заявка не найдена.' }
   }
 
   await env.DB.prepare(
@@ -572,11 +572,11 @@ async function rejectByTgId(env: Bindings, targetTgId: number, reason: string) {
   await sendMessage(
     env,
     payment.chat_id,
-    `вќЊ РџР»Р°С‚РµР¶ РїРѕРєР° РЅРµ РїРѕРґС‚РІРµСЂР¶РґРµРЅ.\nРџСЂРёС‡РёРЅР°: ${escapeHtml(reason)}\n\nРџСЂРѕРІРµСЂСЊС‚Рµ СЂРµРєРІРёР·РёС‚С‹ Рё РѕС‚РїСЂР°РІСЊС‚Рµ С‡РµРє РµС‰Рµ СЂР°Р·.`,
+    `❌ Платеж пока не подтвержден.\nПричина: ${escapeHtml(reason)}\n\nПроверьте реквизиты и отправьте чек еще раз.`,
     { reply_markup: mainKeyboard() }
   )
 
-  return { ok: true, message: `Р—Р°СЏРІРєР° РѕС‚РєР»РѕРЅРµРЅР° РґР»СЏ tg_id ${targetTgId}.` }
+  return { ok: true, message: `Заявка отклонена для tg_id ${targetTgId}.` }
 }
 
 app.get('/', (c) => c.text('OK'))
@@ -670,11 +670,11 @@ app.post('/', async (c) => {
     await upsertTelegramUser(env, tgUser)
 
     if (text === '/start') {
-      const name = tgUser.first_name ? escapeHtml(tgUser.first_name) : 'РґСЂСѓРі'
+      const name = tgUser.first_name ? escapeHtml(tgUser.first_name) : 'друг'
       await sendMessage(
         env,
         chatId,
-        `РџСЂРёРІРµС‚, <b>${name}</b>!\nРЇ РїРѕРјРѕРіСѓ РєСѓРїРёС‚СЊ VPN Рё РІС‹РґР°Рј РєР»СЋС‡.`,
+        `Привет, <b>${name}</b>!\nЯ помогу купить VPN и выдам ключ.`,
         { reply_markup: mainKeyboard() }
       )
       return c.text('OK')
@@ -686,11 +686,11 @@ app.post('/', async (c) => {
         await sendMessage(
           env,
           chatId,
-          `вњ… РўРµСЃС‚РѕРІС‹Р№ РєР»СЋС‡:\n<code>${escapeHtml(link)}</code>`,
+          `✅ Тестовый ключ:\n<code>${escapeHtml(link)}</code>`,
           { reply_markup: mainKeyboard() }
         )
       } catch (e: any) {
-        await sendMessage(env, chatId, `вќЊ РћС€РёР±РєР° РІС‹РґР°С‡Рё РєР»СЋС‡Р°: ${escapeHtml(String(e.message || e))}`)
+        await sendMessage(env, chatId, `❌ Ошибка выдачи ключа: ${escapeHtml(String(e.message || e))}`)
       }
       return c.text('OK')
     }
@@ -701,7 +701,7 @@ app.post('/', async (c) => {
         await sendMessage(
           env,
           chatId,
-          'вќЊ РќРµС‚ Р°РєС‚РёРІРЅРѕР№ РїРѕРґРїРёСЃРєРё. РЎРЅР°С‡Р°Р»Р° РѕС„РѕСЂРјРёС‚Рµ РїРѕРґРїРёСЃРєСѓ, РїРѕС‚РѕРј РїРѕР»СѓС‡РёС‚Рµ РєРѕРґ РґР»СЏ Chrome.',
+          '❌ Нет активной подписки. Сначала оформите подписку, потом получите код для Chrome.',
           { reply_markup: mainKeyboard() }
         )
         return c.text('OK')
@@ -710,7 +710,7 @@ app.post('/', async (c) => {
       await sendMessage(
         env,
         chatId,
-        `рџ”ђ РљРѕРґ РґР»СЏ Chrome: <code>${claim.code}</code>\nРљРѕРґ СЂР°Р±РѕС‚Р°РµС‚ ${claim.ttlSec} СЃРµРє.\n\nРћС‚РєСЂРѕР№С‚Рµ СЂР°СЃС€РёСЂРµРЅРёРµ, РІСЃС‚Р°РІСЊС‚Рµ РєРѕРґ Рё РЅР°Р¶РјРёС‚Рµ "РџРѕР»СѓС‡РёС‚СЊ РєР»СЋС‡".`,
+        `🔐 Код для Chrome: <code>${claim.code}</code>\nКод работает ${claim.ttlSec} сек.\n\nОткройте расширение, вставьте код и нажмите "Получить ключ".`,
         { reply_markup: mainKeyboard() }
       )
       return c.text('OK')
@@ -724,7 +724,7 @@ app.post('/', async (c) => {
     if (isAdmin(env, tgUser.id) && text.startsWith('/approve ')) {
       const targetTgId = Number(text.replace('/approve', '').trim())
       if (!targetTgId) {
-        await sendMessage(env, chatId, 'Р¤РѕСЂРјР°С‚: /approve 123456789')
+        await sendMessage(env, chatId, 'Формат: /approve 123456789')
         return c.text('OK')
       }
       const result = await approveByTgId(env, targetTgId)
@@ -736,9 +736,9 @@ app.post('/', async (c) => {
       const payload = text.replace('/reject', '').trim()
       const firstSpace = payload.indexOf(' ')
       const targetTgId = Number(firstSpace > -1 ? payload.slice(0, firstSpace) : payload)
-      const reason = firstSpace > -1 ? payload.slice(firstSpace + 1).trim() : 'РћРїР»Р°С‚Р° РЅРµ РЅР°Р№РґРµРЅР°'
+      const reason = firstSpace > -1 ? payload.slice(firstSpace + 1).trim() : 'Оплата не найдена'
       if (!targetTgId) {
-        await sendMessage(env, chatId, 'Р¤РѕСЂРјР°С‚: /reject 123456789 РїСЂРёС‡РёРЅР°')
+        await sendMessage(env, chatId, 'Формат: /reject 123456789 причина')
         return c.text('OK')
       }
       const result = await rejectByTgId(env, targetTgId, reason)
@@ -746,18 +746,18 @@ app.post('/', async (c) => {
       return c.text('OK')
     }
 
-    if (text === 'РџСЂРѕС„РёР»СЊ') {
+    if (text === 'Профиль') {
       await showProfile(env, chatId, tgUser.id)
       return c.text('OK')
     }
 
-    if (text === 'РџРѕРґРґРµСЂР¶РєР°') {
-      const support = env.SUPPORT_TEXT || 'РќР°РїРёС€РёС‚Рµ РІ РїРѕРґРґРµСЂР¶РєСѓ: @your_support'
+    if (text === 'Поддержка') {
+      const support = env.SUPPORT_TEXT || 'Напишите в поддержку: @your_support'
       await sendMessage(env, chatId, support, { reply_markup: mainKeyboard() })
       return c.text('OK')
     }
 
-    if (text === 'РљСѓРїРёС‚СЊ') {
+    if (text === 'Купить') {
       const payment = await createOrGetPendingPayment(env, tgUser.id, chatId)
       await sendMessage(env, chatId, paymentInstruction(env, payment.payment_id), {
         reply_markup: mainKeyboard()
@@ -765,20 +765,20 @@ app.post('/', async (c) => {
       return c.text('OK')
     }
 
-    if (isPhoto || /^С‡РµРє\b/i.test(text)) {
-      const noted = await markPaymentForReview(env, tgUser, text || 'Р§РµРє РѕС‚РїСЂР°РІР»РµРЅ С„РѕС‚Рѕ')
+    if (isPhoto || /^чек\b/i.test(text)) {
+      const noted = await markPaymentForReview(env, tgUser, text || 'Чек отправлен фото')
       if (noted) {
         await sendMessage(
           env,
           chatId,
-          'вњ… Р§РµРє РїРѕР»СѓС‡РµРЅ. РџРµСЂРµРґР°Р» Р·Р°СЏРІРєСѓ Р°РґРјРёРЅРёСЃС‚СЂР°С‚РѕСЂСѓ, РѕР±С‹С‡РЅРѕ РїСЂРѕРІРµСЂРєР° Р·Р°РЅРёРјР°РµС‚ 5-15 РјРёРЅСѓС‚.',
+          '✅ Чек получен. Передал заявку администратору, обычно проверка занимает 5-15 минут.',
           { reply_markup: mainKeyboard() }
         )
         return c.text('OK')
       }
     }
 
-    await sendMessage(env, chatId, 'Р’С‹Р±РµСЂРёС‚Рµ РґРµР№СЃС‚РІРёРµ РІ РјРµРЅСЋ РЅРёР¶Рµ.', { reply_markup: mainKeyboard() })
+    await sendMessage(env, chatId, 'Выберите действие в меню ниже.', { reply_markup: mainKeyboard() })
     return c.text('OK')
   } catch (e: any) {
     console.error('Telegram webhook error', e)
@@ -787,5 +787,4 @@ app.post('/', async (c) => {
 })
 
 export default app
-
 
