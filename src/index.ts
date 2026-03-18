@@ -674,7 +674,7 @@ app.post('/', async (c) => {
       await sendMessage(
         env,
         chatId,
-        `Привет, <b>${name}</b>!\nЯ помогу купить VPN и выдам ключ.`,
+        `Привет, <b>${name}</b>!\nЯ помогу купить VPN и выдам ключ.\n\n<code>BUILD:c1e9cb2-v2</code>`,
         { reply_markup: mainKeyboard() }
       )
       return c.text('OK')
