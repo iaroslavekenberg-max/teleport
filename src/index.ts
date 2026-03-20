@@ -3,6 +3,7 @@
 type Bindings = {
   TELEGRAM_BOT_TOKEN: string
   TELEGRAM_WEBHOOK_SECRET?: string
+  FREE_MODE?: string
   MARZBAN_URL: string
   MARZBAN_USERNAME: string
   MARZBAN_PASSWORD: string
@@ -77,6 +78,11 @@ function adminIds(env: Bindings) {
 
 function isAdmin(env: Bindings, tgId: number) {
   return adminIds(env).includes(tgId)
+}
+
+function isFreeMode(env: Bindings) {
+  const value = (env.FREE_MODE ?? '1').trim().toLowerCase()
+  return value === '1' || value === 'true' || value === 'yes' || value === 'on'
 }
 
 function extensionCorsHeaders() {
@@ -237,7 +243,13 @@ async function ensureVpnForUser(env: Bindings, tgId: number) {
   return link
 }
 
-async function activateSubscription(env: Bindings, tgId: number, chatId: number, planDays: number) {
+async function activateSubscription(
+  env: Bindings,
+  tgId: number,
+  chatId: number,
+  planDays: number,
+  reason: 'payment' | 'free' = 'payment'
+) {
   const vlessLink = await ensureVpnForUser(env, tgId)
 
   await env.DB.prepare('UPDATE subscriptions SET is_active = 0, updated_at = datetime(\'now\') WHERE tg_id = ?')
@@ -253,12 +265,12 @@ async function activateSubscription(env: Bindings, tgId: number, chatId: number,
     .bind(tgId, chatId, PLAN_NAME, `+${planDays} day`, vlessLink)
     .run()
 
-  await sendMessage(
-    env,
-    chatId,
-    `✅ <b>Оплата подтверждена</b>\n\nВаш ключ:\n<code>${escapeHtml(vlessLink)}</code>\n\nСрок: ${planDays} дней.`,
-    { reply_markup: mainKeyboard() }
-  )
+  const title =
+    reason === 'free' ? '🎁 <b>Тестовый доступ активирован</b>' : '✅ <b>Оплата подтверждена</b>'
+
+  await sendMessage(env, chatId, `${title}\n\nВаш ключ:\n<code>${escapeHtml(vlessLink)}</code>\n\nСрок: ${planDays} дней.`, {
+    reply_markup: mainKeyboard()
+  })
 }
 
 async function showProfile(env: Bindings, chatId: number, tgId: number) {
@@ -671,10 +683,13 @@ app.post('/', async (c) => {
 
     if (text === '/start') {
       const name = tgUser.first_name ? escapeHtml(tgUser.first_name) : 'друг'
+      const extra = isFreeMode(env)
+        ? '\n\n🎁 Сейчас тестовый режим: нажмите <b>Купить</b>, и доступ активируется бесплатно.'
+        : ''
       await sendMessage(
         env,
         chatId,
-        `Привет, <b>${name}</b>!\nЯ помогу купить VPN и выдам ключ.\n\n<code>BUILD:c1e9cb2-v2</code>`,
+        `Привет, <b>${name}</b>!\nЯ помогу купить VPN и выдам ключ.${extra}`,
         { reply_markup: mainKeyboard() }
       )
       return c.text('OK')
@@ -758,6 +773,11 @@ app.post('/', async (c) => {
     }
 
     if (text === 'Купить') {
+      if (isFreeMode(env)) {
+        await activateSubscription(env, tgUser.id, chatId, PLAN_DAYS, 'free')
+        return c.text('OK')
+      }
+
       const payment = await createOrGetPendingPayment(env, tgUser.id, chatId)
       await sendMessage(env, chatId, paymentInstruction(env, payment.payment_id), {
         reply_markup: mainKeyboard()
@@ -766,6 +786,13 @@ app.post('/', async (c) => {
     }
 
     if (isPhoto || /^чек\b/i.test(text)) {
+      if (isFreeMode(env)) {
+        await sendMessage(env, chatId, 'Сейчас тестовый бесплатный режим. Просто нажмите <b>Купить</b>.', {
+          reply_markup: mainKeyboard()
+        })
+        return c.text('OK')
+      }
+
       const noted = await markPaymentForReview(env, tgUser, text || 'Чек отправлен фото')
       if (noted) {
         await sendMessage(
