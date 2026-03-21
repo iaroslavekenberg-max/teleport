@@ -774,7 +774,17 @@ app.post('/', async (c) => {
 
     if (text === 'Купить') {
       if (isFreeMode(env)) {
-        await activateSubscription(env, tgUser.id, chatId, PLAN_DAYS, 'free')
+        try {
+          await activateSubscription(env, tgUser.id, chatId, PLAN_DAYS, 'free')
+        } catch (e: any) {
+          console.error('Free activation failed', e)
+          await sendMessage(
+            env,
+            chatId,
+            `❌ Не удалось активировать тестовый доступ: ${escapeHtml(String(e?.message || e))}`,
+            { reply_markup: mainKeyboard() }
+          )
+        }
         return c.text('OK')
       }
 
