@@ -186,7 +186,7 @@ async function getMarzbanToken(env: Bindings) {
 
   if (!resp.ok) {
     const err = await resp.text()
-    throw new Error(`Marzban auth failed: ${resp.status} ${err}`)
+    throw new Error(`Marzban auth failed (url=${env.MARZBAN_URL}): ${resp.status} ${err}`)
   }
 
   const data = (await resp.json()) as { access_token: string }
